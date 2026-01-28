@@ -2722,8 +2722,6 @@ key (such as `\\[universal-argument]')."
                  (dumb-jump-ag-installed?)))
     dumb-jump--git-grep-plus-ag-installed?))
 
-(defvar dumb-jump--is-under-test nil
-  "For testing only!!")
 (defvar dumb-jump--rg-installed? 'unset)
 (defun dumb-jump-rg-installed? ()
     "Return t if rg 0.10 or later with PCRE2 support is installed.
@@ -2743,10 +2741,7 @@ Return nil otherwise.  In that case store diagnostics information in
                       (if has-pcre2
                           (setq ok t)
                         (dumb-jump-env-problem
-                         "Ripgrep does not support PCRE2.")
-                        (when dumb-jump--is-under-test
-                            ;; under ert test, force throw: detect if its not mocked
-                            (throw 'rg-no-pcre2 nil)))
+                         "Ripgrep does not support PCRE2."))
                     ;;
                     (dumb-jump-env-problem
                      "Ripgrep >= 0.10 is not available.")))
@@ -3931,9 +3926,7 @@ possible `dumb-jump-force-searcher' overriding."
      ;; identified by that user-option if possible.
      (dumb-jump-force-searcher
       (cond
-       ;; For now, honour original choices.
-       ;;  Eventually, these choices should eventually be deprecated,
-       ;;  and this code removed.
+       ;; Honour forced choices, they might be identified in dir-local file
        ((member dumb-jump-force-searcher '(ag
                                            rg
                                            grep

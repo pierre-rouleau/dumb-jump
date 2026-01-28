@@ -9,9 +9,6 @@
 (require 'dumb-jump)
 ;;; Code:
 
-;; (setq dumb-jump--is-under-test t)
-                                        ; PROULEAU-TEMPORARY
-
 (defun dumb-jump-output-rule-test-failures (failures)
   (--each failures (princ (format "\t%s\n" it))))
 
