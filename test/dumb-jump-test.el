@@ -415,11 +415,11 @@
       ;; restore `delete-trailing-whitespace'
       (advice-remove 'delete-trailing-whitespace 'dumb-jump--noop))))
 
-;; (when (dumb-jump-rg-installed?)
-;;   (ert-deftest dumb-jump-test-rg-rules-test ()
-;;     (let ((rule-failures (dumb-jump-test-rg-rules)))
-;;       (dumb-jump-output-rule-test-failures rule-failures)
-;;       (should (= (length rule-failures) 0)))))
+(when (dumb-jump-rg-installed?)
+  (ert-deftest dumb-jump-test-rg-rules-test ()
+    (let ((rule-failures (dumb-jump-test-rg-rules)))
+      (dumb-jump-output-rule-test-failures rule-failures)
+      (should (= (length rule-failures) 0)))))
 
 (when (and (not (eq system-type 'darwin))   ; git grep is broken on macOS as of Jan 2026.
            (dumb-jump-git-grep-installed?))
@@ -477,16 +477,16 @@
       ;; restore `delete-trailing-whitespace'
       (advice-remove 'delete-trailing-whitespace 'dumb-jump--noop))))
 
-;; (when (dumb-jump-rg-installed?)
-;;   (ert-deftest dumb-jump-test-rg-rules-fail-test ()
-;;     (let* ((bad-rule '(:type "variable"
-;;                              :supports ("ag" "grep" "rg" "git-grep")
-;;                              :language "elisp"
-;;                              :regex "\\\(defvarJJJ\\b\\s*"
-;;                              :tests ("(defvar test ")))
-;; 	   (dumb-jump-find-rules (cons bad-rule dumb-jump-find-rules))
-;; 	   (rule-failures (dumb-jump-test-rg-rules)))
-;;       (should (= (length rule-failures) 1)))))
+(when (dumb-jump-rg-installed?)
+  (ert-deftest dumb-jump-test-rg-rules-fail-test ()
+    (let* ((bad-rule '(:type "variable"
+                             :supports ("ag" "grep" "rg" "git-grep")
+                             :language "elisp"
+                             :regex "\\\(defvarJJJ\\b\\s*"
+                             :tests ("(defvar test ")))
+	   (dumb-jump-find-rules (cons bad-rule dumb-jump-find-rules))
+	   (rule-failures (dumb-jump-test-rg-rules)))
+      (should (= (length rule-failures) 1)))))
 
 (when (and (not (eq system-type 'darwin))   ; git grep is broken on macOS as of Jan 2026.
            (dumb-jump-git-grep-installed?))
