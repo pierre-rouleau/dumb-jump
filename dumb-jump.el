@@ -2728,31 +2728,31 @@ key (such as `\\[universal-argument]')."
 Return nil otherwise.  In that case store diagnostics information in
 `dumb-jump--detected-env-problems'."
   (if (eq dumb-jump--rg-installed? 'unset)
-      (if (executable-find dumb-jump-rg-cmd)
-          (let* ((ok nil)
-                 (stdout (shell-command-to-string
-                          (concat dumb-jump-rg-cmd " --version")))
-                 (has-version (string-match "ripgrep \\([0-9]+\\.[0-9]+\\).*"
-                                            stdout)))
-            (if has-version
-                (let ((version (match-string-no-properties 1 stdout))
-                      (has-pcre2 (string-match "features:.*pcre2" stdout)))
-                  (if (version<= "0.10" version)
-                      (if has-pcre2
-                          (setq ok t)
-                        (dumb-jump-env-problem
-                         "Ripgrep does not support PCRE2."))
-                    ;;
+      (let* ((ok nil)
+             (stdout (shell-command-to-string
+                      (concat dumb-jump-rg-cmd " --version")))
+             (has-version (string-match "ripgrep \\([0-9]+\\.[0-9]+\\).*"
+                                        stdout)))
+        (if has-version
+            (let ((version (match-string-no-properties 1 stdout))
+                  (has-pcre2 (string-match "features:.*pcre2" stdout)))
+              (if (version<= "0.10" version)
+                  (if has-pcre2
+                      (setq ok t)
                     (dumb-jump-env-problem
-                     "Ripgrep >= 0.10 is not available.")))
-              ;;
-              (dumb-jump-env-problem "Can't detect Ripgrep version."))
-            (setq dumb-jump--rg-installed? ok))
-        ;;
-        (dumb-jump-env-problem
-         (format "Ripgrep not found as specified in `dumb-jump-rg-cmd': %s"
-                 dumb-jump-rg-cmd))
-        (setq dumb-jump--rg-installed? nil))
+                     "Ripgrep does not support PCRE2."))
+                ;;
+                (dumb-jump-env-problem
+                 "Ripgrep >= 0.10 is not available.")))
+          ;;
+          (dumb-jump-env-problem "Can't detect Ripgrep version."))
+        (setq dumb-jump--rg-installed? ok))
+    ;; (if (executable-find dumb-jump-rg-cmd)
+    ;;     ;;
+    ;;     (dumb-jump-env-problem
+    ;;      (format "Ripgrep not found as specified in `dumb-jump-rg-cmd': %s"
+    ;;              dumb-jump-rg-cmd))
+    ;;     (setq dumb-jump--rg-installed? nil))
     dumb-jump--rg-installed?))
 
 
