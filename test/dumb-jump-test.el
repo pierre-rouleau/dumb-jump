@@ -886,22 +886,49 @@
       ;; confirm memoization of the previous result
       (should (eq (dumb-jump-rg-installed?) t)))))
 
+(ert-deftest dumb-jump-rg-installed?-test-old ()
+  (let ((dumb-jump--rg-installed? 'unset))
+    (with-mock
+      (mock (executable-find *) => t)
+      (mock (shell-command-to-string *) => "ripgrep 0.09.0\n\nfeatures:+pcre2\n\n" :times 1)
+      (should (eq (dumb-jump-rg-installed?) nil))
+      ;; confirm memoization of the previous result
+      (should (eq (dumb-jump-rg-installed?) nil)))))
+
+(ert-deftest dumb-jump-rg-installed?-test-yes-no-pcre2 ()
+  (let ((dumb-jump--rg-installed? 'unset))
+    (with-mock
+      (mock (executable-find *) => t)
+     (mock (shell-command-to-string *) => "ripgrep 0.10.0\n" :times 1)
+     (should (eq (dumb-jump-rg-installed?) nil))
+     ;; confirm memoization of the previous result
+     (should (eq (dumb-jump-rg-installed?) nil)))))
+
 (ert-deftest dumb-jump-rg-installed?-test-yes2 ()
   (let ((dumb-jump--rg-installed? 'unset))
     (with-mock
       (mock (executable-find *) => t)
       (mock (shell-command-to-string *) => "ripgrep 1.1.0\n\n\nfeatures:+pcre2\n" :times 1)
-     (should (eq (dumb-jump-rg-installed?) t))
-     ;; confirm memoization of the previous result
-     (should (eq (dumb-jump-rg-installed?) t)))))
+      (should (eq (dumb-jump-rg-installed?) t))
+      ;; confirm memoization of the previous result
+      (should (eq (dumb-jump-rg-installed?) t)))))
+
+(ert-deftest dumb-jump-rg-installed?-test-yes2-no-pcre2 ()
+  (let ((dumb-jump--rg-installed? 'unset))
+    (with-mock
+      (mock (executable-find *) => t)
+      (mock (shell-command-to-string *) => "ripgrep 1.1.0\n" :times 1)
+      (should (eq (dumb-jump-rg-installed?) nil))
+      ;; confirm memoization of the previous result
+      (should (eq (dumb-jump-rg-installed?) nil)))))
 
 (ert-deftest dumb-jump-git-grep-installed?-test ()
   (let ((dumb-jump--git-grep-installed? 'unset))
     (with-mock
-     (mock (shell-command-to-string *) => "fatal: no pattern given\n" :times 1)
-     (should (eq (dumb-jump-git-grep-installed?) t))
-     ;; confirm memoization of the previous result
-     (should (eq (dumb-jump-git-grep-installed?) t)))))
+      (mock (shell-command-to-string *) => "fatal: no pattern given\n" :times 1)
+      (should (eq (dumb-jump-git-grep-installed?) t))
+      ;; confirm memoization of the previous result
+      (should (eq (dumb-jump-git-grep-installed?) t)))))
 
 (ert-deftest dumb-jump-go-nogrep-test ()
   (let ((js-file (f-join test-data-dir-proj1 "src" "js" "fake2.js")))
