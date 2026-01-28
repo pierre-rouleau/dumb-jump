@@ -439,11 +439,11 @@
     (dumb-jump-output-rule-test-failures rule-failures)
     (should (= (length rule-failures) 0)))))
 
-;; (when (dumb-jump-rg-installed?)
-;;   (ert-deftest dumb-jump-test-rg-rules-not-test () ;; :not tests
-;;     (let ((rule-failures (dumb-jump-test-rg-rules t)))
-;;       (dumb-jump-output-rule-test-failures rule-failures)
-;;       (should (= (length rule-failures) 0)))))
+(when (dumb-jump-rg-installed?)
+  (ert-deftest dumb-jump-test-rg-rules-not-test () ;; :not tests
+    (let ((rule-failures (dumb-jump-test-rg-rules t)))
+      (dumb-jump-output-rule-test-failures rule-failures)
+      (should (= (length rule-failures) 0)))))
 
 (ert-deftest dumb-jump-test-grep-rules-fail-test ()
   (let* ((bad-rule '(:type "variable"
