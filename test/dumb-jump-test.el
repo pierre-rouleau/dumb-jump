@@ -1395,7 +1395,9 @@
 (ert-deftest dumb-jump-selected-grep-variant-test-rg-nil ()
   (let ((dumb-jump-prefer-searcher 'rg)
         (dumb-jump-force-searcher nil))
-    (should (eq (dumb-jump-selected-grep-variant) 'rg))))
+    (with-mock
+      (mock (dumb-jump-ag-installed?) => t)
+      (should (eq (dumb-jump-selected-grep-variant) 'rg)))))
 
 (ert-deftest dumb-jump-selected-grep-variant-test-rg-grep ()
   (let ((dumb-jump-prefer-searcher 'rg)
