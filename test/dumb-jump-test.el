@@ -842,23 +842,26 @@
 (ert-deftest dumb-jump-rg-installed?-test-no ()
   (let ((dumb-jump--rg-installed? 'unset))
     (with-mock
-     (mock (shell-command-to-string *) => "ripgrep 0.3.1\n" :times 1)
-     (should (not (eq (dumb-jump-rg-installed?) t)))
-     ;; confirm memoization of the previous result
-     (should (not (eq (dumb-jump-rg-installed?) t))))))
+      (mock (executable-find *) => t)
+      (mock (shell-command-to-string *) => "ripgrep 0.3.1\n" :times 1)
+      (should (not (eq (dumb-jump-rg-installed?) t)))
+      ;; confirm memoization of the previous result
+      (should (not (eq (dumb-jump-rg-installed?) t))))))
 
 (ert-deftest dumb-jump-rg-installed?-test-yes ()
   (let ((dumb-jump--rg-installed? 'unset))
     (with-mock
-     (mock (shell-command-to-string *) => "ripgrep 0.10.0\n\nfeatures:+pcre2\n\n" :times 1)
-     (should (eq (dumb-jump-rg-installed?) t))
-     ;; confirm memoization of the previous result
-     (should (eq (dumb-jump-rg-installed?) t)))))
+      (mock (executable-find *) => t)
+      (mock (shell-command-to-string *) => "ripgrep 0.10.0\n\nfeatures:+pcre2\n\n" :times 1)
+      (should (eq (dumb-jump-rg-installed?) t))
+      ;; confirm memoization of the previous result
+      (should (eq (dumb-jump-rg-installed?) t)))))
 
 (ert-deftest dumb-jump-rg-installed?-test-yes2 ()
   (let ((dumb-jump--rg-installed? 'unset))
     (with-mock
-     (mock (shell-command-to-string *) => "ripgrep 1.1.0\n\n\nfeatures:+pcre2\n" :times 1)
+      (mock (executable-find *) => t)
+      (mock (shell-command-to-string *) => "ripgrep 1.1.0\n\n\nfeatures:+pcre2\n" :times 1)
      (should (eq (dumb-jump-rg-installed?) t))
      ;; confirm memoization of the previous result
      (should (eq (dumb-jump-rg-installed?) t)))))
@@ -877,12 +880,13 @@
       (goto-char (point-min))
       (forward-char 13)
       (with-mock
-       (mock (dumb-jump-rg-installed?) => nil)
-       (mock (dumb-jump-ag-installed?) => nil)
-       (mock (dumb-jump-git-grep-installed?) => nil)
-       (mock (dumb-jump-grep-installed?) => nil)
-       (mock (dumb-jump-message "Please install ag, rg, git grep or grep!"))
-       (with-no-warnings (dumb-jump-go))))))
+        ;; (mock (executable-find *) => t)
+        (mock (dumb-jump-rg-installed?) => nil)
+        (mock (dumb-jump-ag-installed?) => nil)
+        (mock (dumb-jump-git-grep-installed?) => nil)
+        (mock (dumb-jump-grep-installed?) => nil)
+        (mock (dumb-jump-message "Please install ag, rg, git grep or grep!"))
+        (with-no-warnings (dumb-jump-go))))))
 
 (ert-deftest dumb-jump-go-nosymbol-test ()
   (let ((js-file (f-join test-data-dir-proj1 "src" "js" "fake2.js")))
@@ -895,12 +899,13 @@
 
 (ert-deftest dumb-jump-message-get-results-nogrep-test ()
   (with-mock
-   (mock (dumb-jump-rg-installed?) => nil)
-   (mock (dumb-jump-ag-installed?) => nil)
-   (mock (dumb-jump-git-grep-installed?) => nil)
-   (mock (dumb-jump-grep-installed?) => nil)
-   (let ((results (dumb-jump-get-results)))
-     (should (eq (plist-get results :issue) 'nogrep)))))
+    ;; (mock (executable-find *) => t)
+    (mock (dumb-jump-rg-installed?) => nil)
+    (mock (dumb-jump-ag-installed?) => nil)
+    (mock (dumb-jump-git-grep-installed?) => nil)
+    (mock (dumb-jump-grep-installed?) => nil)
+    (let ((results (dumb-jump-get-results)))
+      (should (eq (plist-get results :issue) 'nogrep)))))
 
 (ert-deftest dumb-jump-message-result-follow-test ()
   (with-mock
@@ -1296,6 +1301,7 @@
   (let ((dumb-jump-prefer-searcher nil)
         (dumb-jump-force-searcher nil))
     (with-mock
+      ;; (mock (executable-find *) => t)
       (mock (dumb-jump-ag-installed?) => nil)
       (mock (dumb-jump-rg-installed?) => nil)
       (mock (dumb-jump-grep-installed?) => 'bsd)
@@ -1305,6 +1311,7 @@
   (let ((dumb-jump-prefer-searcher nil)
         (dumb-jump-force-searcher nil))
     (with-mock
+      ;; (mock (executable-find *) => t)
       (mock (dumb-jump-ag-installed?) => nil)
       (mock (dumb-jump-rg-installed?) => nil)
       (mock (dumb-jump-grep-installed?) => nil)
@@ -1323,6 +1330,7 @@
   (let ((dumb-jump-prefer-searcher nil)
         (dumb-jump-force-searcher nil))
     (with-mock
+      ;; (mock (executable-find *) => t)
       (mock (dumb-jump-ag-installed?) => nil)
       (mock (dumb-jump-rg-installed?) => t)
       (should (eq (dumb-jump-selected-grep-variant) 'rg)))))
@@ -1366,6 +1374,7 @@
   (let ((dumb-jump-prefer-searcher nil)
         (dumb-jump-force-searcher nil))
     (with-mock
+      ;; (mock (executable-find *) => t)
       (mock (dumb-jump-ag-installed?) => t)
       (mock (dumb-jump-rg-installed?) => t)
       (mock (dumb-jump-grep-installed?) => 'gnu)
