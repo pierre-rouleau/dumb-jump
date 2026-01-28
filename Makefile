@@ -6,6 +6,7 @@ all: test
 test: unit
 
 unit:
+	rg --version
 	${CASK} exec ert-runner
 
 install:
