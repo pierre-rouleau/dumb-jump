@@ -1396,7 +1396,6 @@
   (let ((dumb-jump-prefer-searcher 'rg)
         (dumb-jump-force-searcher nil))
     (with-mock
-      (mock (dumb-jump-ag-installed?) => t)
       (mock (dumb-jump-rg-installed?) => t)
       (should (eq (dumb-jump-selected-grep-variant) 'rg)))))
 
