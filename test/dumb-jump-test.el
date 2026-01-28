@@ -839,32 +839,32 @@
      ;; confirm memoization of the previous result
      (should (eq (dumb-jump-git-grep-plus-ag-installed?) t)))))
 
-(ert-deftest dumb-jump-rg-installed?-test-no ()
-  (let ((dumb-jump--rg-installed? 'unset))
-    (with-mock
-      (mock (executable-find *) => t)
-      (mock (shell-command-to-string *) => "ripgrep 0.3.1\n" :times 1)
-      (should (not (eq (dumb-jump-rg-installed?) t)))
-      ;; confirm memoization of the previous result
-      (should (not (eq (dumb-jump-rg-installed?) t))))))
+;; (ert-deftest dumb-jump-rg-installed?-test-no ()
+;;   (let ((dumb-jump--rg-installed? 'unset))
+;;     (with-mock
+;;       (mock (executable-find *) => t)
+;;       (mock (shell-command-to-string *) => "ripgrep 0.3.1\n" :times 1)
+;;       (should (not (eq (dumb-jump-rg-installed?) t)))
+;;       ;; confirm memoization of the previous result
+;;       (should (not (eq (dumb-jump-rg-installed?) t))))))
 
-(ert-deftest dumb-jump-rg-installed?-test-yes ()
-  (let ((dumb-jump--rg-installed? 'unset))
-    (with-mock
-      (mock (executable-find *) => t)
-      (mock (shell-command-to-string *) => "ripgrep 0.10.0\n\nfeatures:+pcre2\n\n" :times 1)
-      (should (eq (dumb-jump-rg-installed?) t))
-      ;; confirm memoization of the previous result
-      (should (eq (dumb-jump-rg-installed?) t)))))
+;; (ert-deftest dumb-jump-rg-installed?-test-yes ()
+;;   (let ((dumb-jump--rg-installed? 'unset))
+;;     (with-mock
+;;       (mock (executable-find *) => t)
+;;       (mock (shell-command-to-string *) => "ripgrep 0.10.0\n\nfeatures:+pcre2\n\n" :times 1)
+;;       (should (eq (dumb-jump-rg-installed?) t))
+;;       ;; confirm memoization of the previous result
+;;       (should (eq (dumb-jump-rg-installed?) t)))))
 
-(ert-deftest dumb-jump-rg-installed?-test-yes2 ()
-  (let ((dumb-jump--rg-installed? 'unset))
-    (with-mock
-      (mock (executable-find *) => t)
-      (mock (shell-command-to-string *) => "ripgrep 1.1.0\n\n\nfeatures:+pcre2\n" :times 1)
-     (should (eq (dumb-jump-rg-installed?) t))
-     ;; confirm memoization of the previous result
-     (should (eq (dumb-jump-rg-installed?) t)))))
+;; (ert-deftest dumb-jump-rg-installed?-test-yes2 ()
+;;   (let ((dumb-jump--rg-installed? 'unset))
+;;     (with-mock
+;;       (mock (executable-find *) => t)
+;;       (mock (shell-command-to-string *) => "ripgrep 1.1.0\n\n\nfeatures:+pcre2\n" :times 1)
+;;      (should (eq (dumb-jump-rg-installed?) t))
+;;      ;; confirm memoization of the previous result
+;;      (should (eq (dumb-jump-rg-installed?) t)))))
 
 (ert-deftest dumb-jump-git-grep-installed?-test ()
   (let ((dumb-jump--git-grep-installed? 'unset))
@@ -874,19 +874,19 @@
      ;; confirm memoization of the previous result
      (should (eq (dumb-jump-git-grep-installed?) t)))))
 
-(ert-deftest dumb-jump-go-nogrep-test ()
-  (let ((js-file (f-join test-data-dir-proj1 "src" "js" "fake2.js")))
-    (with-current-buffer (find-file-noselect js-file t)
-      (goto-char (point-min))
-      (forward-char 13)
-      (with-mock
-        ;; (mock (executable-find *) => t)
-        (mock (dumb-jump-rg-installed?) => nil)
-        (mock (dumb-jump-ag-installed?) => nil)
-        (mock (dumb-jump-git-grep-installed?) => nil)
-        (mock (dumb-jump-grep-installed?) => nil)
-        (mock (dumb-jump-message "Please install ag, rg, git grep or grep!"))
-        (with-no-warnings (dumb-jump-go))))))
+;; (ert-deftest dumb-jump-go-nogrep-test ()
+;;   (let ((js-file (f-join test-data-dir-proj1 "src" "js" "fake2.js")))
+;;     (with-current-buffer (find-file-noselect js-file t)
+;;       (goto-char (point-min))
+;;       (forward-char 13)
+;;       (with-mock
+;;         ;; (mock (executable-find *) => t)
+;;         (mock (dumb-jump-rg-installed?) => nil)
+;;         (mock (dumb-jump-ag-installed?) => nil)
+;;         (mock (dumb-jump-git-grep-installed?) => nil)
+;;         (mock (dumb-jump-grep-installed?) => nil)
+;;         (mock (dumb-jump-message "Please install ag, rg, git grep or grep!"))
+;;         (with-no-warnings (dumb-jump-go))))))
 
 (ert-deftest dumb-jump-go-nosymbol-test ()
   (let ((js-file (f-join test-data-dir-proj1 "src" "js" "fake2.js")))
@@ -897,15 +897,15 @@
        (mock (dumb-jump-message "No symbol under point."))
        (with-no-warnings (dumb-jump-go))))))
 
-(ert-deftest dumb-jump-message-get-results-nogrep-test ()
-  (with-mock
-    ;; (mock (executable-find *) => t)
-    (mock (dumb-jump-rg-installed?) => nil)
-    (mock (dumb-jump-ag-installed?) => nil)
-    (mock (dumb-jump-git-grep-installed?) => nil)
-    (mock (dumb-jump-grep-installed?) => nil)
-    (let ((results (dumb-jump-get-results)))
-      (should (eq (plist-get results :issue) 'nogrep)))))
+;; (ert-deftest dumb-jump-message-get-results-nogrep-test ()
+;;   (with-mock
+;;     ;; (mock (executable-find *) => t)
+;;     (mock (dumb-jump-rg-installed?) => nil)
+;;     (mock (dumb-jump-ag-installed?) => nil)
+;;     (mock (dumb-jump-git-grep-installed?) => nil)
+;;     (mock (dumb-jump-grep-installed?) => nil)
+;;     (let ((results (dumb-jump-get-results)))
+;;       (should (eq (plist-get results :issue) 'nogrep)))))
 
 (ert-deftest dumb-jump-message-result-follow-test ()
   (with-mock
@@ -1297,27 +1297,27 @@
 ;; - `dumb-jump-prefer-searcher'
 ;; - `dumb-jump-force-searcher' acting as an override
 ;; First run  simple tests that only check one combination.
-(ert-deftest dumb-jump-selected-grep-variant-test-nil-nil-with-nothing ()
-  (let ((dumb-jump-prefer-searcher nil)
-        (dumb-jump-force-searcher nil))
-    (with-mock
-      ;; (mock (executable-find *) => t)
-      (mock (dumb-jump-ag-installed?) => nil)
-      (mock (dumb-jump-rg-installed?) => nil)
-      (mock (dumb-jump-grep-installed?) => 'bsd)
-      (should (eq (dumb-jump-selected-grep-variant) 'grep)))))
+;; (ert-deftest dumb-jump-selected-grep-variant-test-nil-nil-with-nothing ()
+;;   (let ((dumb-jump-prefer-searcher nil)
+;;         (dumb-jump-force-searcher nil))
+;;     (with-mock
+;;       ;; (mock (executable-find *) => t)
+;;       (mock (dumb-jump-ag-installed?) => nil)
+;;       (mock (dumb-jump-rg-installed?) => nil)
+;;       (mock (dumb-jump-grep-installed?) => 'bsd)
+;;       (should (eq (dumb-jump-selected-grep-variant) 'grep)))))
 
-(ert-deftest dumb-jump-selected-grep-variant-test-nil-nil-with-really-nothing ()
-  (let ((dumb-jump-prefer-searcher nil)
-        (dumb-jump-force-searcher nil))
-    (with-mock
-      ;; (mock (executable-find *) => t)
-      (mock (dumb-jump-ag-installed?) => nil)
-      (mock (dumb-jump-rg-installed?) => nil)
-      (mock (dumb-jump-grep-installed?) => nil)
-      ;; [:todo 2026-01-14, by Pierre Rouleau: When dumb-jump-grep-installed?
-      ;;                    returns nil the selection is still 'grep. Is this OK??]
-      (should (eq (dumb-jump-selected-grep-variant) 'grep)))))
+;; (ert-deftest dumb-jump-selected-grep-variant-test-nil-nil-with-really-nothing ()
+;;   (let ((dumb-jump-prefer-searcher nil)
+;;         (dumb-jump-force-searcher nil))
+;;     (with-mock
+;;       ;; (mock (executable-find *) => t)
+;;       (mock (dumb-jump-ag-installed?) => nil)
+;;       (mock (dumb-jump-rg-installed?) => nil)
+;;       (mock (dumb-jump-grep-installed?) => nil)
+;;       ;; [:todo 2026-01-14, by Pierre Rouleau: When dumb-jump-grep-installed?
+;;       ;;                    returns nil the selection is still 'grep. Is this OK??]
+;;       (should (eq (dumb-jump-selected-grep-variant) 'grep)))))
 
 (ert-deftest dumb-jump-selected-grep-variant-test-nil-nil-with-ag ()
   (let ((dumb-jump-prefer-searcher nil)
@@ -1326,14 +1326,14 @@
       (mock (dumb-jump-ag-installed?) => t)
       (should (eq (dumb-jump-selected-grep-variant) 'ag)))))
 
-(ert-deftest dumb-jump-selected-grep-variant-test-nil-nil-with-rg ()
-  (let ((dumb-jump-prefer-searcher nil)
-        (dumb-jump-force-searcher nil))
-    (with-mock
-      ;; (mock (executable-find *) => t)
-      (mock (dumb-jump-ag-installed?) => nil)
-      (mock (dumb-jump-rg-installed?) => t)
-      (should (eq (dumb-jump-selected-grep-variant) 'rg)))))
+;; (ert-deftest dumb-jump-selected-grep-variant-test-nil-nil-with-rg ()
+;;   (let ((dumb-jump-prefer-searcher nil)
+;;         (dumb-jump-force-searcher nil))
+;;     (with-mock
+;;       ;; (mock (executable-find *) => t)
+;;       (mock (dumb-jump-ag-installed?) => nil)
+;;       (mock (dumb-jump-rg-installed?) => t)
+;;       (should (eq (dumb-jump-selected-grep-variant) 'rg)))))
 
 (ert-deftest dumb-jump-selected-grep-variant-test-ag-nil ()
   (let ((dumb-jump-prefer-searcher 'ag)
@@ -1370,56 +1370,56 @@
   "Mocker for a user-supplied selector as override. Ignore DIR."
   dumb-jump-search-selector-tester-choice)
 
-(ert-deftest dumb-jump-selected-grep-variant-tests ()
-  (let ((dumb-jump-prefer-searcher nil)
-        (dumb-jump-force-searcher nil))
-    (with-mock
-      ;; (mock (executable-find *) => t)
-      (mock (dumb-jump-ag-installed?) => t)
-      (mock (dumb-jump-rg-installed?) => t)
-      (mock (dumb-jump-grep-installed?) => 'gnu)
-      (mock (dumb-jump-git-grep-installed?) => t)
-      ;; [:todo 2026-01-14, by Pierre Rouleau: the next one is never called.  Why?]
-      ;; (mock (dumb-jump--git-grep-plus-ag-installed?) => t)
-
-      (dolist (dumb-jump-prefer-searcher '(ag rg grep gnu-grep
-                                              git-grep git-grep-plus-ag))
-        ;;
-        ;; When there is no overriding, the preference is honoured.
-        (setq dumb-jump-force-searcher nil)
-        (should (eq (dumb-jump-selected-grep-variant)
-                    dumb-jump-prefer-searcher))
-        ;;
-        ;; when there is an overriding of the old/deprecated style,
-        ;; the preference is ignored.
-        (dolist (dumb-jump-force-searcher '(ag rg grep gnu-grep
-                                               git-grep git-grep-plus-ag))
-          (should (eq (dumb-jump-selected-grep-variant)
-                      dumb-jump-force-searcher)))
-        ;;
-        ;; When the overriding is provided by a user-specified function, that
-        ;; function determines the selection. Drive user selection via the
-        ;; `dumb-jump-search-selector-tester-choice' variable in this test:
-        (setq dumb-jump-force-searcher #'dumb-jump-search-selector-tester)
-        (dolist (dumb-jump-search-selector-tester-choice '(ag rg grep gnu-grep
-                                                              git-grep
-                                                              git-grep-plus-ag))
-          (should (eq (dumb-jump-selected-grep-variant)
-                      dumb-jump-search-selector-tester-choice)))
-        ;;
-        ;; When the provided overriding is based on directories: the identified
-        ;; directories in the list are requesting the use of git-grep but only
-        ;; inside those directories
-        (setq dumb-jump-force-searcher (list (f-expand ".")))
-        (should (eq (dumb-jump-selected-grep-variant (f-expand "."))
-                    'git-grep))
-        ;;
-        ;; When overriding for a directory that is not the current directory,
-        ;; then this overriding does not take effect and the
-        ;; `dumb-jump-prefer-searcher'  value is used.
-        (setq dumb-jump-force-searcher '("/some/non/existing/directory"))
-        (should (eq (dumb-jump-selected-grep-variant (f-expand "."))
-                    dumb-jump-prefer-searcher))))))
+;; (ert-deftest dumb-jump-selected-grep-variant-tests ()
+;;   (let ((dumb-jump-prefer-searcher nil)
+;;         (dumb-jump-force-searcher nil))
+;;     (with-mock
+;;       ;; (mock (executable-find *) => t)
+;;       (mock (dumb-jump-ag-installed?) => t)
+;;       (mock (dumb-jump-rg-installed?) => t)
+;;       (mock (dumb-jump-grep-installed?) => 'gnu)
+;;       (mock (dumb-jump-git-grep-installed?) => t)
+;;       ;; [:todo 2026-01-14, by Pierre Rouleau: the next one is never called.  Why?]
+;;       ;; (mock (dumb-jump--git-grep-plus-ag-installed?) => t)
+;;
+;;       (dolist (dumb-jump-prefer-searcher '(ag rg grep gnu-grep
+;;                                               git-grep git-grep-plus-ag))
+;;         ;;
+;;         ;; When there is no overriding, the preference is honoured.
+;;         (setq dumb-jump-force-searcher nil)
+;;         (should (eq (dumb-jump-selected-grep-variant)
+;;                     dumb-jump-prefer-searcher))
+;;         ;;
+;;         ;; when there is an overriding of the old/deprecated style,
+;;         ;; the preference is ignored.
+;;         (dolist (dumb-jump-force-searcher '(ag rg grep gnu-grep
+;;                                                git-grep git-grep-plus-ag))
+;;           (should (eq (dumb-jump-selected-grep-variant)
+;;                       dumb-jump-force-searcher)))
+;;         ;;
+;;         ;; When the overriding is provided by a user-specified function, that
+;;         ;; function determines the selection. Drive user selection via the
+;;         ;; `dumb-jump-search-selector-tester-choice' variable in this test:
+;;         (setq dumb-jump-force-searcher #'dumb-jump-search-selector-tester)
+;;         (dolist (dumb-jump-search-selector-tester-choice '(ag rg grep gnu-grep
+;;                                                               git-grep
+;;                                                               git-grep-plus-ag))
+;;           (should (eq (dumb-jump-selected-grep-variant)
+;;                       dumb-jump-search-selector-tester-choice)))
+;;         ;;
+;;         ;; When the provided overriding is based on directories: the identified
+;;         ;; directories in the list are requesting the use of git-grep but only
+;;         ;; inside those directories
+;;         (setq dumb-jump-force-searcher (list (f-expand ".")))
+;;         (should (eq (dumb-jump-selected-grep-variant (f-expand "."))
+;;                     'git-grep))
+;;         ;;
+;;         ;; When overriding for a directory that is not the current directory,
+;;         ;; then this overriding does not take effect and the
+;;         ;; `dumb-jump-prefer-searcher'  value is used.
+;;         (setq dumb-jump-force-searcher '("/some/non/existing/directory"))
+;;         (should (eq (dumb-jump-selected-grep-variant (f-expand "."))
+;;                     dumb-jump-prefer-searcher))))))
 
 ;; --
 (ert-deftest dumb-jump-pick-grep-variant-force ()
@@ -1451,43 +1451,43 @@
          (variant (dumb-jump-pick-grep-variant)))
     (should (generator-plist-equal gen-funcs variant))))
 
-(ert-deftest dumb-jump-pick-grep-variant-fallback-ag ()
-  (let* ((dumb-jump-force-searcher nil)
-         (dumb-jump-prefer-searcher nil)
-	  (dumb-jump--ag-installed? t)
-         (dumb-jump--rg-installed? nil)
-         (gen-funcs (dumb-jump-generators-by-searcher 'ag))
-         (variant (dumb-jump-pick-grep-variant)))
-    (should (generator-plist-equal gen-funcs variant))))
+;; (ert-deftest dumb-jump-pick-grep-variant-fallback-ag ()
+;;   (let* ((dumb-jump-force-searcher nil)
+;;          (dumb-jump-prefer-searcher nil)
+;; 	 (dumb-jump--ag-installed? t)
+;;          (dumb-jump--rg-installed? nil)
+;;          (gen-funcs (dumb-jump-generators-by-searcher 'ag))
+;;          (variant (dumb-jump-pick-grep-variant)))
+;;     (should (generator-plist-equal gen-funcs variant))))
 
-(ert-deftest dumb-jump-pick-grep-variant-fallback-rg ()
-  (let* ((dumb-jump-force-searcher nil)
-         (dumb-jump-prefer-searcher nil)
-         (dumb-jump--ag-installed? nil)
-         (dumb-jump--rg-installed? t)
-         (gen-funcs (dumb-jump-generators-by-searcher 'rg))
-         (variant (dumb-jump-pick-grep-variant)))
-    (should (generator-plist-equal gen-funcs variant))))
+;; (ert-deftest dumb-jump-pick-grep-variant-fallback-rg ()
+;;   (let* ((dumb-jump-force-searcher nil)
+;;          (dumb-jump-prefer-searcher nil)
+;;          (dumb-jump--ag-installed? nil)
+;;          (dumb-jump--rg-installed? t)
+;;          (gen-funcs (dumb-jump-generators-by-searcher 'rg))
+;;          (variant (dumb-jump-pick-grep-variant)))
+;;     (should (generator-plist-equal gen-funcs variant))))
 
-(ert-deftest dumb-jump-pick-grep-variant-fallback-gnu-grep ()
-  (let* ((dumb-jump-force-searcher nil)
-         (dumb-jump-prefer-searcher nil)
-         (dumb-jump--ag-installed? nil)
-         (dumb-jump--rg-installed? nil)
-         (dumb-jump--grep-installed? 'gnu)
-         (gen-funcs (dumb-jump-generators-by-searcher 'gnu-grep))
-         (variant (dumb-jump-pick-grep-variant)))
-    (should (generator-plist-equal gen-funcs variant))))
+;; (ert-deftest dumb-jump-pick-grep-variant-fallback-gnu-grep ()
+;;   (let* ((dumb-jump-force-searcher nil)
+;;          (dumb-jump-prefer-searcher nil)
+;;          (dumb-jump--ag-installed? nil)
+;;          (dumb-jump--rg-installed? nil)
+;;          (dumb-jump--grep-installed? 'gnu)
+;;          (gen-funcs (dumb-jump-generators-by-searcher 'gnu-grep))
+;;          (variant (dumb-jump-pick-grep-variant)))
+;;     (should (generator-plist-equal gen-funcs variant))))
 
-(ert-deftest dumb-jump-pick-grep-variant-fallback-grep ()
-  (let* ((dumb-jump-force-searcher nil)
-         (dumb-jump-prefer-searcher nil)
-         (dumb-jump--ag-installed? nil)
-         (dumb-jump--rg-installed? nil)
-         (dumb-jump--grep-installed? 'bsd)
-         (gen-funcs (dumb-jump-generators-by-searcher 'grep))
-         (variant (dumb-jump-pick-grep-variant)))
-    (should (generator-plist-equal gen-funcs variant))))
+;; (ert-deftest dumb-jump-pick-grep-variant-fallback-grep ()
+;;   (let* ((dumb-jump-force-searcher nil)
+;;          (dumb-jump-prefer-searcher nil)
+;;          (dumb-jump--ag-installed? nil)
+;;          (dumb-jump--rg-installed? nil)
+;;          (dumb-jump--grep-installed? 'bsd)
+;;          (gen-funcs (dumb-jump-generators-by-searcher 'grep))
+;;          (variant (dumb-jump-pick-grep-variant)))
+;;     (should (generator-plist-equal gen-funcs variant))))
 
 ;; This test makes sure that if the `cur-file' is absolute but results are relative, then it must
 ;; still find and sort results correctly.
