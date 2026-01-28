@@ -2724,18 +2724,32 @@ key (such as `\\[universal-argument]')."
 
 (defvar dumb-jump--rg-installed? 'unset)
 (defun dumb-jump-rg-installed? ()
-  "Return t if rg later than 0.10 is installed."
+  "Return t if rg 0.10 or later with PCRE2 support is installed.
+Return nil otherwise.  In that case store diagnostics information in the
+variable `dumb-jump--detected-env-problems'."
   (if (eq dumb-jump--rg-installed? 'unset)
-      (setq dumb-jump--rg-installed?
-            (let ((result (s-match "ripgrep \\([0-9]+\\)\\.\\([0-9]+\\).*"
-                                   (shell-command-to-string
-                                    (concat dumb-jump-rg-cmd " --version")))))
-              (when (equal (length result) 3)
-                (let ((major (string-to-number (nth 1 result)))
-                      (minor (string-to-number (nth 2 result))))
-                  (or (and (= major 0)
-                           (>= minor 10))
-                      (>= major 1))))))
+      (setq
+       dumb-jump--rg-installed?
+       (catch 'test-fail
+         (unless (executable-find dumb-jump-rg-cmd)
+           (dumb-jump-env-problem
+            (format "Ripgrep not found as specified in `dumb-jump-rg-cmd': %s"
+                    dumb-jump-rg-cmd))
+           (throw 'test-fail nil))
+         (let* ((stdout (shell-command-to-string
+                         (concat dumb-jump-rg-cmd " --version")))
+                (has-version (string-match "ripgrep \\([0-9]+\\.[0-9]+\\).*"
+                                           stdout)))
+           (unless has-version
+             (dumb-jump-env-problem "Can't detect Ripgrep version.")
+             (throw 'test-fail nil))
+           (unless (version<= "0.10" (match-string-no-properties 1 stdout))
+             (dumb-jump-env-problem "Ripgrep >= 0.10 is not available.")
+             (throw 'test-fail nil))
+           (unless (string-match "features:.*pcre2" stdout)
+             (dumb-jump-env-problem "Ripgrep does not support PCRE2.")
+             (throw 'test-fail nil))
+           t)))
     dumb-jump--rg-installed?))
 
 (defvar dumb-jump--git-grep-installed? 'unset)
