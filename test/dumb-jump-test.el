@@ -1397,6 +1397,7 @@
         (dumb-jump-force-searcher nil))
     (with-mock
       (mock (dumb-jump-ag-installed?) => t)
+      (mock (dumb-jump-rg-installed?) => t)
       (should (eq (dumb-jump-selected-grep-variant) 'rg)))))
 
 (ert-deftest dumb-jump-selected-grep-variant-test-rg-grep ()
