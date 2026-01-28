@@ -2740,7 +2740,9 @@ Return nil otherwise.  In that case store diagnostics information in
                   (if has-pcre2
                       (setq ok t)
                     (dumb-jump-env-problem
-                     "Ripgrep does not support PCRE2."))
+                     "Ripgrep does not support PCRE2.")
+                    (setq ok t)         ; lie about PCRE2 availability
+                    )
                 ;;
                 (dumb-jump-env-problem
                  "Ripgrep >= 0.10 is not available.")))
