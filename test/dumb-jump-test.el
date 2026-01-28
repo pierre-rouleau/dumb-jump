@@ -877,23 +877,23 @@
       ;; confirm memoization of the previous result
       (should (not (eq (dumb-jump-rg-installed?) t))))))
 
-;; (ert-deftest dumb-jump-rg-installed?-test-yes ()
-;;   (let ((dumb-jump--rg-installed? 'unset))
-;;     (with-mock
-;;       (mock (executable-find *) => t)
-;;       (mock (shell-command-to-string *) => "ripgrep 0.10.0\n\nfeatures:+pcre2\n\n" :times 1)
-;;       (should (eq (dumb-jump-rg-installed?) t))
-;;       ;; confirm memoization of the previous result
-;;       (should (eq (dumb-jump-rg-installed?) t)))))
+(ert-deftest dumb-jump-rg-installed?-test-yes ()
+  (let ((dumb-jump--rg-installed? 'unset))
+    (with-mock
+      (mock (executable-find *) => t)
+      (mock (shell-command-to-string *) => "ripgrep 0.10.0\n\nfeatures:+pcre2\n\n" :times 1)
+      (should (eq (dumb-jump-rg-installed?) t))
+      ;; confirm memoization of the previous result
+      (should (eq (dumb-jump-rg-installed?) t)))))
 
-;; (ert-deftest dumb-jump-rg-installed?-test-yes2 ()
-;;   (let ((dumb-jump--rg-installed? 'unset))
-;;     (with-mock
-;;       (mock (executable-find *) => t)
-;;       (mock (shell-command-to-string *) => "ripgrep 1.1.0\n\n\nfeatures:+pcre2\n" :times 1)
-;;      (should (eq (dumb-jump-rg-installed?) t))
-;;      ;; confirm memoization of the previous result
-;;      (should (eq (dumb-jump-rg-installed?) t)))))
+(ert-deftest dumb-jump-rg-installed?-test-yes2 ()
+  (let ((dumb-jump--rg-installed? 'unset))
+    (with-mock
+      (mock (executable-find *) => t)
+      (mock (shell-command-to-string *) => "ripgrep 1.1.0\n\n\nfeatures:+pcre2\n" :times 1)
+     (should (eq (dumb-jump-rg-installed?) t))
+     ;; confirm memoization of the previous result
+     (should (eq (dumb-jump-rg-installed?) t)))))
 
 (ert-deftest dumb-jump-git-grep-installed?-test ()
   (let ((dumb-jump--git-grep-installed? 'unset))
