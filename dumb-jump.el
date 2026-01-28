@@ -2724,33 +2724,37 @@ key (such as `\\[universal-argument]')."
 
 (defvar dumb-jump--rg-installed? 'unset)
 (defun dumb-jump-rg-installed? ()
-  "Return t if rg 0.10 or later with PCRE2 support is installed.
-Return nil otherwise.  In that case store diagnostics information in the
-variable `dumb-jump--detected-env-problems'."
+    "Return t if rg 0.10 or later with PCRE2 support is installed.
+Return nil otherwise.  In that case store diagnostics information in
+`dumb-jump--detected-env-problems'."
   (if (eq dumb-jump--rg-installed? 'unset)
-      (setq
-       dumb-jump--rg-installed?
-       (catch 'ripgrep-problem
-         (unless (executable-find dumb-jump-rg-cmd)
-           (dumb-jump-env-problem
-            (format "Ripgrep not found as specified in `dumb-jump-rg-cmd': %s"
-                    dumb-jump-rg-cmd))
-           (throw 'ripgrep-problem nil))
-         (let* ((stdout (shell-command-to-string
-                         (concat dumb-jump-rg-cmd " --version")))
-                (has-version (string-match "ripgrep \\([0-9]+\\.[0-9]+\\).*"
-                                           stdout)))
-           (unless has-version
-             (dumb-jump-env-problem "Can't detect Ripgrep version.")
-             (throw 'ripgrep-problem nil))
-           (unless (version<= "0.10" (match-string-no-properties 1 stdout))
-             (dumb-jump-env-problem "Ripgrep >= 0.10 is not available.")
-             (throw 'ripgrep-problem nil))
-           (unless (string-match "features:.*pcre2" stdout)
-             (dumb-jump-env-problem "Ripgrep does not support PCRE2.")
-             (throw 'ripgrep-problem nil))
-           t)))
+      (if (executable-find dumb-jump-rg-cmd)
+          (let* ((ok nil)
+                 (stdout (shell-command-to-string
+                          (concat dumb-jump-rg-cmd " --version")))
+                 (has-version (string-match "ripgrep \\([0-9]+\\.[0-9]+\\).*"
+                                            stdout)))
+            (if has-version
+                (let ((version (match-string-no-properties 1 stdout))
+                      (has-pcre2 (string-match "features:.*pcre2" stdout)))
+                  (if (version<= "0.10" version)
+                      (if has-pcre2
+                          (setq ok t)
+                        (dumb-jump-env-problem
+                         "Ripgrep does not support PCRE2."))
+                    ;;
+                    (dumb-jump-env-problem
+                     "Ripgrep >= 0.10 is not available.")))
+              ;;
+              (dumb-jump-env-problem "Can't detect Ripgrep version."))
+            (setq dumb-jump--rg-installed? ok))
+        ;;
+        (dumb-jump-env-problem
+         (format "Ripgrep not found as specified in `dumb-jump-rg-cmd': %s"
+                 dumb-jump-rg-cmd))
+        (setq dumb-jump--rg-installed? nil))
     dumb-jump--rg-installed?))
+
 
 (defvar dumb-jump--git-grep-installed? 'unset)
 (defun dumb-jump-git-grep-installed? ()
