@@ -2722,6 +2722,8 @@ key (such as `\\[universal-argument]')."
                  (dumb-jump-ag-installed?)))
     dumb-jump--git-grep-plus-ag-installed?))
 
+(defvar dumb-jump--is-under-test nil
+  "For testing only!!")
 (defvar dumb-jump--rg-installed? 'unset)
 (defun dumb-jump-rg-installed? ()
     "Return t if rg 0.10 or later with PCRE2 support is installed.
@@ -2742,7 +2744,7 @@ Return nil otherwise.  In that case store diagnostics information in
                           (setq ok t)
                         (dumb-jump-env-problem
                          "Ripgrep does not support PCRE2.")
-                        (if (bound-and-true-p ert-running-test)
+                        (when dumb-jump--is-under-test
                             ;; under ert test, lie about PCRE2
                             (setq ok t)))
                     ;;
