@@ -334,25 +334,29 @@
     (should (= (plist-get test-result ':line) 26))))
 
 (ert-deftest dumb-jump-run-cmd-test ()
-  (let* ((gen-funcs (dumb-jump-pick-grep-variant test-data-dir-elisp))
-         (parse-fn (plist-get gen-funcs :parse))
-         (generate-fn (plist-get gen-funcs :generate))
-         (searcher (plist-get gen-funcs :searcher))
-         (regexes (dumb-jump-get-contextual-regexes "elisp" nil searcher))
-         (results (dumb-jump-run-command "another-fake-function" test-data-dir-elisp regexes "" ""
-                                         "blah.el" 3 parse-fn generate-fn))
-        (first-result (car results)))
-    (should (s-contains? "/fake.el" (plist-get first-result :path)))
-    (should (= (plist-get first-result :line) 6))))
+  (with-mock
+    (mock (dumb-jump-rg-installed?) => t)
+    (let* ((gen-funcs (dumb-jump-pick-grep-variant test-data-dir-elisp))
+           (parse-fn (plist-get gen-funcs :parse))
+           (generate-fn (plist-get gen-funcs :generate))
+           (searcher (plist-get gen-funcs :searcher))
+           (regexes (dumb-jump-get-contextual-regexes "elisp" nil searcher))
+           (results (dumb-jump-run-command "another-fake-function" test-data-dir-elisp regexes "" ""
+                                           "blah.el" 3 parse-fn generate-fn))
+           (first-result (car results)))
+      (should (s-contains? "/fake.el" (plist-get first-result :path)))
+      (should (= (plist-get first-result :line) 6)))))
 
 (ert-deftest dumb-jump-run-cmd-fail-test ()
-  (let* ((gen-funcs (dumb-jump-pick-grep-variant test-data-dir-elisp))
-         (parse-fn (plist-get gen-funcs :parse))
-         (generate-fn (plist-get gen-funcs :generate))
-         (results (dumb-jump-run-command "hidden-function" test-data-dir-elisp nil "" "" "blah.el" 3
-                                         parse-fn generate-fn))
-        (first-result (car results)))
-    (should (null first-result))))
+  (with-mock
+    (mock (dumb-jump-rg-installed?) => t)
+    (let* ((gen-funcs (dumb-jump-pick-grep-variant test-data-dir-elisp))
+           (parse-fn (plist-get gen-funcs :parse))
+           (generate-fn (plist-get gen-funcs :generate))
+           (results (dumb-jump-run-command "hidden-function" test-data-dir-elisp nil "" "" "blah.el" 3
+                                           parse-fn generate-fn))
+           (first-result (car results)))
+      (should (null first-result)))))
 
 (ert-deftest dumb-jump-find-proj-root-test ()
   (let* ((js-file (f-join test-data-dir-proj1 "src" "js"))
