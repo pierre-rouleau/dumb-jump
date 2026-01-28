@@ -2738,17 +2738,13 @@ Return nil otherwise.  In that case store diagnostics information in
                 (let ((version (match-string-no-properties 1 stdout))
                       (has-pcre2 (string-match "features:.*pcre2" stdout)))
                   (if (version<= "0.10" version)
-                      ;; (setq ok t)
                       (if has-pcre2
                           (setq ok t)
                         (dumb-jump-env-problem
-                         "Ripgrep does not support PCRE2.")
-                        (setq ok t)     ; lie to check the tests.
-                        )
+                         "Ripgrep does not support PCRE2."))
                     ;;
                     (dumb-jump-env-problem
-                     (format
-                      "Ripgrep >= 0.10 is not available. has-pcre2 is: %S" has-pcre2))))
+                     "Ripgrep >= 0.10 is not available.")))
               ;;
               (dumb-jump-env-problem "Can't detect Ripgrep version."))
             (setq dumb-jump--rg-installed? ok))
