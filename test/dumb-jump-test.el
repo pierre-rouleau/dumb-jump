@@ -9,7 +9,8 @@
 (require 'dumb-jump)
 ;;; Code:
 
-(setq dumb-jump--is-under-test t)       ; PROULEAU-TEMPORARY
+;; (setq dumb-jump--is-under-test t)
+                                        ; PROULEAU-TEMPORARY
 
 (defun dumb-jump-output-rule-test-failures (failures)
   (--each failures (princ (format "\t%s\n" it))))
@@ -870,14 +871,14 @@
      ;; confirm memoization of the previous result
      (should (eq (dumb-jump-git-grep-plus-ag-installed?) t)))))
 
-;; (ert-deftest dumb-jump-rg-installed?-test-no ()
-;;   (let ((dumb-jump--rg-installed? 'unset))
-;;     (with-mock
-;;       (mock (executable-find *) => t)
-;;       (mock (shell-command-to-string *) => "ripgrep 0.3.1\n" :times 1)
-;;       (should (not (eq (dumb-jump-rg-installed?) t)))
-;;       ;; confirm memoization of the previous result
-;;       (should (not (eq (dumb-jump-rg-installed?) t))))))
+(ert-deftest dumb-jump-rg-installed?-test-no ()
+  (let ((dumb-jump--rg-installed? 'unset))
+    (with-mock
+      (mock (executable-find *) => t)
+      (mock (shell-command-to-string *) => "ripgrep 0.3.1\n" :times 1)
+      (should (not (eq (dumb-jump-rg-installed?) t)))
+      ;; confirm memoization of the previous result
+      (should (not (eq (dumb-jump-rg-installed?) t))))))
 
 ;; (ert-deftest dumb-jump-rg-installed?-test-yes ()
 ;;   (let ((dumb-jump--rg-installed? 'unset))
