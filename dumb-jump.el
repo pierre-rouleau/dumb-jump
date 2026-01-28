@@ -2677,6 +2677,31 @@ If nil, jump without confirmation but print a warning."
 ;; ---------------------------------------------------------------------------
 ;; Search tool presence checkers
 ;; -----------------------------
+(defvar dumb-jump--detected-env-problems nil
+  "List of detected environment problems.
+Last detected problem is first in the list.")
+
+(defun dumb-jump-env-problem (problem)
+  "Add PROBLEM string to `dumb-jump--detected-env-problems' list."
+  (unless (member problem dumb-jump--detected-env-problems)
+    (push problem dumb-jump--detected-env-problems)))
+
+;;;###autoload
+(defun dumb-jump-show-detected-problems (keep)
+  "Print all problems detected by dumb-jump environment in *Message*.
+Erase the accumulated list unless the command is issued with any prefix
+key (such as `\\[universal-argument]')."
+  (interactive "P")
+  (if dumb-jump--detected-env-problems
+      (progn
+        (message "-- Dumb-Jump Detected Environment Problems:")
+        (dolist (problem (reverse dumb-jump--detected-env-problems))
+          (message problem))
+        (unless keep
+          (setq dumb-jump--detected-env-problems nil)))
+    (message "No problem recorded yet.")))
+
+;; --
 
 (defvar dumb-jump--ag-installed? 'unset)
 (defun dumb-jump-ag-installed? ()
