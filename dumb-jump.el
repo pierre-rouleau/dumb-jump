@@ -2745,8 +2745,8 @@ Return nil otherwise.  In that case store diagnostics information in
                         (dumb-jump-env-problem
                          "Ripgrep does not support PCRE2.")
                         (when dumb-jump--is-under-test
-                            ;; under ert test, lie about PCRE2
-                            (setq ok t)))
+                            ;; under ert test, force throw: detect if its not mocked
+                            (throw 'rg-no-pcre2 nil)))
                     ;;
                     (dumb-jump-env-problem
                      "Ripgrep >= 0.10 is not available.")))
