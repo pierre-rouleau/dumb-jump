@@ -906,19 +906,19 @@
      ;; confirm memoization of the previous result
      (should (eq (dumb-jump-git-grep-installed?) t)))))
 
-;; (ert-deftest dumb-jump-go-nogrep-test ()
-;;   (let ((js-file (f-join test-data-dir-proj1 "src" "js" "fake2.js")))
-;;     (with-current-buffer (find-file-noselect js-file t)
-;;       (goto-char (point-min))
-;;       (forward-char 13)
-;;       (with-mock
-;;         ;; (mock (executable-find *) => t)
-;;         (mock (dumb-jump-rg-installed?) => nil)
-;;         (mock (dumb-jump-ag-installed?) => nil)
-;;         (mock (dumb-jump-git-grep-installed?) => nil)
-;;         (mock (dumb-jump-grep-installed?) => nil)
-;;         (mock (dumb-jump-message "Please install ag, rg, git grep or grep!"))
-;;         (with-no-warnings (dumb-jump-go))))))
+(ert-deftest dumb-jump-go-nogrep-test ()
+  (let ((js-file (f-join test-data-dir-proj1 "src" "js" "fake2.js")))
+    (with-current-buffer (find-file-noselect js-file t)
+      (goto-char (point-min))
+      (forward-char 13)
+      (with-mock
+        ;; (mock (executable-find *) => t)
+        (mock (dumb-jump-rg-installed?) => nil)
+        (mock (dumb-jump-ag-installed?) => nil)
+        (mock (dumb-jump-git-grep-installed?) => nil)
+        (mock (dumb-jump-grep-installed?) => nil)
+        (mock (dumb-jump-message "Please install ag, rg, git grep or grep!"))
+        (with-no-warnings (dumb-jump-go))))))
 
 (ert-deftest dumb-jump-go-nosymbol-test ()
   (let ((js-file (f-join test-data-dir-proj1 "src" "js" "fake2.js")))
@@ -930,15 +930,15 @@
         (mock (dumb-jump-message "No symbol under point."))
         (with-no-warnings (dumb-jump-go))))))
 
-;; (ert-deftest dumb-jump-message-get-results-nogrep-test ()
-;;   (with-mock
-;;     ;; (mock (executable-find *) => t)
-;;     (mock (dumb-jump-rg-installed?) => nil)
-;;     (mock (dumb-jump-ag-installed?) => nil)
-;;     (mock (dumb-jump-git-grep-installed?) => nil)
-;;     (mock (dumb-jump-grep-installed?) => nil)
-;;     (let ((results (dumb-jump-get-results)))
-;;       (should (eq (plist-get results :issue) 'nogrep)))))
+(ert-deftest dumb-jump-message-get-results-nogrep-test ()
+  (with-mock
+    ;; (mock (executable-find *) => t)
+    (mock (dumb-jump-rg-installed?) => nil)
+    (mock (dumb-jump-ag-installed?) => nil)
+    (mock (dumb-jump-git-grep-installed?) => nil)
+    (mock (dumb-jump-grep-installed?) => nil)
+    (let ((results (dumb-jump-get-results)))
+      (should (eq (plist-get results :issue) 'nogrep)))))
 
 (ert-deftest dumb-jump-message-result-follow-test ()
   (with-mock
