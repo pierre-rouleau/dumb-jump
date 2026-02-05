@@ -187,16 +187,7 @@ one of two preferred choice overriding methods:
   :type 'string)
 
 ;; ---------------------------------------------------------------------------
-;; Dumb-jump generic regular expression meta-concepts
-;;
-;; - `JJJ` : Is replaced by the searched identifier
-;; - `\\j` : Represents the word-boundary regular-expression to use instead
-;;           of `\\b` when word boundary must not include '-'.
-;;           In the Lisp family of programming languages the '-' character is
-;;           allowed in identifiers.
-;; - `\\s` : for a single white space character.
-;;           Replaced by `[[:space:]]` for some search tools as identified by
-;;           `dumb-jump-use-space-bracket-exp-for' returning t for a tool variant.
+;; Dumb Jump Regular Expressions  (see `dumb-jump-find-rules' docstring)
 
 (defcustom dumb-jump-force-using-space-bracket-exp
   (eq system-type 'windows-nt)
@@ -2646,16 +2637,34 @@ If nil add also the language type of current src block."
 
   "List of search regex pattern templates organized by language and type.
 Used for generating the grep tool search commands.
-Notes:
-- For a given language, a regular expression is only used by Dumb Jump when
-  the currently used search tool is identified in the :supports value.
 
-See relevant search tool command lines:
+For a given language, a regular expression is only used by Dumb Jump when
+the currently used search tool is identified in the :supports value.
 
+The regex string is a template filled by `dumb-jump-populate-regex' and
+should contain the \"JJJ\" string, a marker for the searched identifier.
+
+It may also contain the following:
+
+- \"\\\\j\" : a marker for word-boundary regular-expression to use instead
+          of \"\\\\b\" when word boundary concept must support Lisp language
+          family and must not include the characters '-', '?' and '*'.
+          In the Lisp family of programming languages a large number of
+          characters are allowed in identifiers, including '-', '?' and
+          '*'.
+          This marker is replaced by value of the search tool specific
+          dumb-jump-TOOL-word-boundary, like `dumb-jump-ag-word-boundary' for
+          ag.
+
+- \"\\\\s\" : for a single white space character.
+         Replaced by \"[[:space:]]\" for some search tools as identified by
+         `dumb-jump-use-space-bracket-exp-for' returning t for a tool variant.
+
+The language types supported are listed in the linked page below:
 - Ag:
-  https://github.com/ggreer/the_silver_searcher/blob/master/tests/list_file_types.t
+  URL \ `https://github.com/ggreer/the_silver_searcher/blob/master/tests/list_file_types.t'
 - rg:
-  https://github.com/BurntSushi/ripgrep/blob/master/crates/ignore/src/types.rs#L96
+  URL \ `https://github.com/BurntSushi/ripgrep/blob/master/crates/ignore/src/default_types.rs#L12'
 
 More information using the search tool command line help."
   :group 'dumb-jump
