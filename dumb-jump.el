@@ -3284,10 +3284,10 @@ This is the persistent action (\\[helm-execute-persistent-action]) for helm."
       (goto-char (point-min))
       (forward-line (1- line)))))
 
-(defun dumb-jump--format-result (proj result)
-  "Return formatted string for PROJ and RESULT."
+(defun dumb-jump--format-result (proj-root result)
+  "Return file:line:target formatted RESULT as a string stripped of PROJ-ROOT."
   (format "%s:%s: %s"
-          (s-replace proj "" (plist-get result :path))
+          (s-replace proj-root "" (plist-get result :path))
           (plist-get result :line)
           (s-trim (plist-get result :context))))
 
@@ -3302,18 +3302,22 @@ Ignore _PROJ."
                 :caller 'dumb-jump-ivy-jump-to-selected)
     (error "ivy-read is unknown.  Is it loaded?")))
 
-(defun dumb-jump-prompt-user-for-choice (proj results)
-  "Put a PROJ list of RESULTS in menu for user selection.
-The menu can be a `popup-menu' or helm/ivy menu.
-Filters PROJ path from files for display."
-  (let ((choices (--map (dumb-jump--format-result proj it) results)))
+(defun dumb-jump-prompt-user-for-choice (proj-root results)
+  "Prompt user to select one of the identified RESULTS in PROJ-ROOT.
+Strip the PROJ-ROOT (project root path) from the file name shown in each entry.
+Prompt with the mechanism selected by `dumb-jump-selector' user-option if
+available otherwise default to `popup-menu'."
+  (let ((choices (--map (dumb-jump--format-result proj-root it) results)))
     (cond
      ((eq dumb-jump-selector 'completing-read)
       (dumb-jump-to-selected results choices
                              (completing-read "Jump to: " choices)))
+     ;;
      ((and (eq dumb-jump-selector 'ivy)
            (fboundp 'ivy-read))
-      (funcall dumb-jump-ivy-jump-to-selected-function results choices proj))
+      (funcall dumb-jump-ivy-jump-to-selected-function
+               results choices proj-root))
+     ;;
      ((and (eq dumb-jump-selector 'helm)
            (fboundp 'helm))
       (helm :sources
@@ -3323,8 +3327,8 @@ Filters PROJ path from files for display."
                 :candidates (-zip-pair choices results)
                 :persistent-action 'dumb-jump-helm-persist-action))
             :buffer "*helm dumb jump choices*"))
-     (t ; or popup
-      (dumb-jump-to-selected results choices (popup-menu* choices))))))
+     ;; or popup
+     (t (dumb-jump-to-selected results choices (popup-menu* choices))))))
 
 (defun dumb-jump-get-project-root (filepath)
   "Return project root holding FILEPATH.
@@ -3620,8 +3624,9 @@ For instance, remove clojure namespace prefix."
                           dumb-jump-language-file-exts)))
     (--map (plist-get it :language) found)))
 
-(defun dumb-jump-fetch-results (cur-file proj-root lang _config &optional prompt)
-  "Search for symbol in PROMPT or symbol at point.
+(defun dumb-jump-fetch-results (cur-file proj-root lang _config
+                                         &optional entered-name)
+  "Search for symbol in ENTERED-NAME or symbol at point.
 
 Return a list of results based on current file context and calling the
 currently selected searcher tool (grep, ag, rg, ...).
@@ -3630,7 +3635,7 @@ CUR-FILE is the path of the current buffer.
 PROJ-ROOT is that file's root project directory.
 LANG is a string programming language with CONFIG a property list
 of project configuration.
-PROMPT is an optional string identifying item to search.
+ENTERED-NAME is an optional string identifying item to search.
 The returned property list has the following members:
 - :results:
 - :lang    : string: language name
@@ -3642,10 +3647,10 @@ The returned property list has the following members:
          (proj-config (dumb-jump-get-config proj-root))
          (config (when (string-suffix-p ".dumbjump" proj-config)
                    (dumb-jump-read-config proj-root proj-config)))
-         (found-symbol (or prompt (dumb-jump-get-point-symbol)))
+         (found-symbol (or entered-name (dumb-jump-get-point-symbol)))
          (look-for (dumb-jump-process-symbol-by-lang lang found-symbol))
-         (pt-ctx (if prompt
-                     (get-text-property 0 :dumb-jump-ctx prompt)
+         (pt-ctx (if entered-name
+                     (get-text-property 0 :dumb-jump-ctx entered-name)
                    (dumb-jump-get-point-context
                     (dumb-jump-get-point-line)
                     look-for
@@ -3662,9 +3667,9 @@ The returned property list has the following members:
 
          (exclude-paths (when config (plist-get config :exclude)))
          (include-paths (when config (plist-get config :include)))
-                                        ; we will search proj root and all include paths
+         ;; we will search proj root and all include paths
          (search-paths (-distinct (-concat (list proj-root) include-paths)))
-                                        ; run command for all
+         ;; run command for all
          (raw-results (--mapcat
                        ;; TODO: should only pass exclude paths to actual project root
                        (dumb-jump-run-command look-for it
@@ -3674,7 +3679,8 @@ The returned property list has the following members:
                                               generate-fn)
                        search-paths))
 
-         (results (delete-dups (--map (plist-put it :target look-for) raw-results))))
+         (results
+          (delete-dups (--map (plist-put it :target look-for) raw-results))))
 
     `(:results ,results
       :lang ,(if (null lang) "" lang)
@@ -3980,21 +3986,24 @@ Figure which of the RESULTS to jump to.  Favoring the CUR-FILE."
                                   (string= (plist-get it :path) rel-cur-file)))
                          match-no-comments)
 
-               ;; Sort non-current files by path length so the nearest file is more likely to be
-               ;; sorted higher to the top. Also sorts by line number for sanity.
-               (-sort (lambda (x y)
-                        (and (< (plist-get x :line) (plist-get y :line))
-                             (< (length (plist-get x :path)) (length (plist-get y :path)))))
-                      (--filter (not (or (string= (plist-get it :path) cur-file)
-                                         (string= (plist-get it :path) rel-cur-file)))
-                                match-no-comments)))
+               ;; Sort non-current files by path length so the nearest file is
+               ;; more likely to be sorted higher to the top. Also sorts by
+               ;; line number for sanity.
+               (-sort
+                (lambda (x y)
+                  (and (< (plist-get x :line) (plist-get y :line))
+                       (< (length (plist-get x :path)) (length (plist-get y :path)))))
+                (--filter (not (or (string= (plist-get it :path) cur-file)
+                                   (string= (plist-get it :path) rel-cur-file)))
+                          match-no-comments)))
             (-concat
-             (-sort (lambda (x y)
-                      (and (< (plist-get x :line) (plist-get y :line))
-                           (< (length (plist-get x :path)) (length (plist-get y :path)))))
-                    (--filter (not (or (string= (plist-get it :path) cur-file)
-                                       (string= (plist-get it :path) rel-cur-file)))
-                              match-no-comments))
+             (-sort
+              (lambda (x y)
+                (and (< (plist-get x :line) (plist-get y :line))
+                     (< (length (plist-get x :path)) (length (plist-get y :path)))))
+              (--filter (not (or (string= (plist-get it :path) cur-file)
+                                 (string= (plist-get it :path) rel-cur-file)))
+                        match-no-comments))
              (--filter (or (string= (plist-get it :path) cur-file)
                            (string= (plist-get it :path) rel-cur-file))
                        match-no-comments))))
@@ -4002,15 +4011,16 @@ Figure which of the RESULTS to jump to.  Favoring the CUR-FILE."
          (matches
           (if (not prefer-external)
               (-distinct
-               (append (dumb-jump-current-file-results cur-file match-cur-file-front)
-                       (dumb-jump-current-file-results rel-cur-file match-cur-file-front)))
+               (append
+                (dumb-jump-current-file-results cur-file match-cur-file-front)
+                (dumb-jump-current-file-results rel-cur-file match-cur-file-front)))
             match-cur-file-front))
 
          (var-to-jump (car matches))
          ;; TODO: handle if ctx-type is null but ALL results are variable
 
-         ;; When non-aggressive it should only jump when there is only one match, regardless of
-         ;; context.
+         ;; When non-aggressive it should only jump when there is only one
+         ;; match, regardless of context.
          (do-var-jump
           (and (or dumb-jump-aggressive
                    (= (length match-cur-file-front) 1))
@@ -4885,10 +4895,11 @@ The arguments are:
 			 (ctx (dumb-jump-get-point-context line ident col)))
 		    (propertize ident :dumb-jump-ctx ctx)))))
 
-  (cl-defmethod xref-backend-definitions ((_backend (eql dumb-jump)) prompt)
-    (let* ((info (dumb-jump-get-results prompt))
+  (cl-defmethod xref-backend-definitions ((_backend (eql dumb-jump))
+                                          entered-name)
+    (let* ((info (dumb-jump-get-results entered-name))
            (results (plist-get info :results))
-           (look-for (or prompt (plist-get info :symbol)))
+           (look-for (or entered-name (plist-get info :symbol)))
            (proj-root (plist-get info :root))
            (issue (plist-get info :issue))
            (lang (plist-get info :lang))
