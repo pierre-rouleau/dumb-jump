@@ -79,7 +79,7 @@
            (stub dumb-jump-prompt-user-for-choice
                  => (error "Unexpected call to `dumb-jump-prompt-user-for-choice'"))
            ,@body)
-       (setq have-detected-prompting t))
+       (error (setq have-detected-prompting t)))
      (should-not have-detected-prompting)))
 
 ;; ---------------------------------------------------------------------------
