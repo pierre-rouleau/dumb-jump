@@ -3940,6 +3940,17 @@ LANGUAGE is an optional language to pass to `dumb-jump-process-results'."
      (t
       (dumb-jump-prompt-user-for-choice proj-root match-cur-file-front)))))
 
+(defun dumb-jump--candidate-x<y (x y)
+  "Return non-nil if candidate X should sort before candidate Y.
+List candidates of current file at the top, others below, ordered by path names
+and increasing line numbers."
+  (let ((x-path-len (length (plist-get x :path)))
+        (y-path-len (length (plist-get y :path))))
+    (if (/= x-path-len y-path-len)
+        (< x-path-len y-path-len)
+      (< (plist-get x :line)
+         (plist-get y :line)))))
+
 (defun dumb-jump-process-results (results cur-file proj-root ctx-type
                                           _look-for _use-tooltip
                                           prefer-external &optional language)
@@ -3998,21 +4009,15 @@ Figure which of the RESULTS to jump to.  Favoring the CUR-FILE."
                ;; Sort non-current files by path length so the nearest file is
                ;; more likely to be sorted higher to the top. Also sorts by
                ;; line number for sanity.
-               (-sort
-                (lambda (x y)
-                  (and (< (plist-get x :line) (plist-get y :line))
-                       (< (length (plist-get x :path)) (length (plist-get y :path)))))
-                (--filter (not (or (string= (plist-get it :path) cur-file)
-                                   (string= (plist-get it :path) rel-cur-file)))
-                          match-no-comments)))
+               (-sort #'dumb-jump--candidate-x<y
+                      (--filter (not (or (string= (plist-get it :path) cur-file)
+                                         (string= (plist-get it :path) rel-cur-file)))
+                                match-no-comments)))
             (-concat
-             (-sort
-              (lambda (x y)
-                (and (< (plist-get x :line) (plist-get y :line))
-                     (< (length (plist-get x :path)) (length (plist-get y :path)))))
-              (--filter (not (or (string= (plist-get it :path) cur-file)
-                                 (string= (plist-get it :path) rel-cur-file)))
-                        match-no-comments))
+             (-sort #'dumb-jump--candidate-x<y
+                    (--filter (not (or (string= (plist-get it :path) cur-file)
+                                       (string= (plist-get it :path) rel-cur-file)))
+                              match-no-comments))
              (--filter (or (string= (plist-get it :path) cur-file)
                            (string= (plist-get it :path) rel-cur-file))
                        match-no-comments))))
