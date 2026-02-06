@@ -74,12 +74,19 @@
 (defmacro with-mock-forbidding-prompt (&rest body)
   "Test BODY.  Ensure no prompting occurs; fail test if prompting did occur."
   `(let ((have-detected-prompting nil))
-     (condition-case nil
+     (condition-case err
          (with-mock
            (stub dumb-jump-prompt-user-for-choice
                  => (error "Unexpected call to `dumb-jump-prompt-user-for-choice'"))
            ,@body)
-       (error (setq have-detected-prompting t)))
+       (error
+        ;; On prompt detection, remember it.
+        (if (string-match-p
+             "Unexpected call to `dumb-jump-prompt-user-for-choice'"
+             (error-message-string err))
+            (setq have-detected-prompting t))
+        ;; On other exception; propagate it.
+        (signal (car err) (cdr err))))
      (should-not have-detected-prompting)))
 
 ;; ---------------------------------------------------------------------------

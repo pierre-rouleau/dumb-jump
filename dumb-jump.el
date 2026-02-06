@@ -3942,8 +3942,7 @@ LANGUAGE is an optional language to pass to `dumb-jump-process-results'."
 
 (defun dumb-jump--candidate-x<y (x y)
   "Return non-nil if candidate X should sort before candidate Y.
-List candidates of current file at the top, others below, ordered by path names
-and increasing line numbers."
+Order by :path length (shorter first), then by :line."
   (let ((x-path-len (length (plist-get x :path)))
         (y-path-len (length (plist-get y :path))))
     (if (/= x-path-len y-path-len)
