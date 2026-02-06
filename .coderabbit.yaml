@@ -10,4 +10,7 @@ reviews:
   collapse_walkthrough: false
   auto_review:
     enabled: true
+    base_branches:
+      - "main"
+      - "reviews"
     drafts: false
