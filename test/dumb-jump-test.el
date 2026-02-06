@@ -71,7 +71,7 @@
 ;; command that may prompt.  The macro force test failure when dumb-jump
 ;; prompting function, `dumb-jump-prompt-user-for-choice', is invoked.
 
-(defmacro with-mock-no-prompt (&rest body)
+(defmacro with-mock-forbidding-prompt (&rest body)
   "Test BODY.  Ensure no prompting occurs; fail test if prompting did occur."
   `(let ((have-detected-prompting nil))
      (condition-case nil
@@ -533,7 +533,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
 
 (ert-deftest dumb-jump-goto-file-line-test ()
   (let ((js-file (f-join test-data-dir-proj1 "src" "js" "fake.js")))
-    (with-mock-no-prompt
+    (with-mock-forbidding-prompt
      (when (version< emacs-version "29")
        (mock (ring-insert * *)))
      (dumb-jump-goto-file-line js-file 3 0)
@@ -720,7 +720,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
     (with-current-buffer (find-file-noselect js-file t)
       (goto-char (point-min))
       (forward-char 13)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (mock (pop-tag-mark))
         (stub dumb-jump-rg-installed? => t)
         (with-no-warnings (dumb-jump-go))
@@ -755,7 +755,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
     (with-current-buffer (find-file-noselect js-file t)
       (goto-char (point-min))
       (forward-char 13)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 3 9))
         (should (string= go-js-file (with-no-warnings (dumb-jump-go))))))))
@@ -766,7 +766,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
     (with-current-buffer (find-file-noselect js-file t)
       (goto-char (point-min))
       (forward-char 13)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 3 9))
         (should (string= go-js-file (with-no-warnings (dumb-jump-go-other-window))))))))
@@ -777,7 +777,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
     (with-current-buffer (find-file-noselect js-file t)
       (goto-char (point-min))
       (forward-char 13)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 3 9))
         (should (string= go-js-file (with-no-warnings (dumb-jump-go-current-window))))))))
@@ -799,7 +799,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 11)
       (forward-char 76)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 7 35))
         (should (string= js-file (with-no-warnings (dumb-jump-go))))))))
@@ -809,7 +809,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
     (with-current-buffer (find-file-noselect js-file t)
       (goto-char (point-min))
       (forward-line 20)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 1 4))
         (should (string= js-file (with-no-warnings (dumb-jump-go))))))))
@@ -819,7 +819,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
     (with-current-buffer (find-file-noselect js-file t)
       (goto-char (point-min))
       (forward-line 21)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 3 6))
         (should (string= js-file (with-no-warnings (dumb-jump-go))))))))
@@ -829,7 +829,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
     (with-current-buffer (find-file-noselect js-file t)
       (goto-char (point-min))
       (forward-line 22)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 5 6))
         (should (string= js-file (with-no-warnings (dumb-jump-go))))))))
@@ -839,7 +839,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
     (with-current-buffer (find-file-noselect js-file t)
       (goto-char (point-min))
       (forward-line 23)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 10 2))
         (should (string= js-file (with-no-warnings (dumb-jump-go))))))))
@@ -849,7 +849,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
     (with-current-buffer (find-file-noselect js-file t)
       (goto-char (point-min))
       (forward-line 24)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 16 2))
         (should (string= js-file (with-no-warnings (dumb-jump-go))))))))
@@ -860,7 +860,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 36)
       (forward-char 12)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 28 6))
         (should (string= js-file (with-no-warnings (dumb-jump-go))))))))
@@ -873,7 +873,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 7)
       (forward-char 35)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 6 25))
         (should (string= js-file (with-no-warnings (dumb-jump-go))))))))
@@ -885,7 +885,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 13)
       (forward-char 35)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 12 32))
         (should (string= js-file (with-no-warnings (dumb-jump-go))))))))
@@ -897,7 +897,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 20)
       (forward-char 35)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 19 32))
         (should (string= js-file (with-no-warnings (dumb-jump-go))))))))
@@ -909,7 +909,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 13)
       (forward-char 33)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 11 10))
         (should (string= el-file (with-no-warnings (dumb-jump-go))))))))
@@ -921,7 +921,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 21)
       (forward-char 33)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 18 10))
         (should (string= el-file (with-no-warnings (dumb-jump-go))))))))
@@ -933,7 +933,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 4)
       (forward-char 12)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 3 27))
         (should (string= el-file (with-no-warnings (dumb-jump-go))))))))
@@ -944,7 +944,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 1)
       (forward-char 4)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-message "'%s' %s %s declaration not found." "nothing" * *))
         (with-no-warnings (dumb-jump-go))))))
@@ -953,7 +953,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
   (let ((txt-file (f-join test-data-dir-proj1 "src" "js" "nocode.txt")))
     (with-current-buffer (find-file-noselect txt-file t)
       (goto-char (point-min))
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-message "Could not find rules for '%s'." ".txt file"))
         (with-no-warnings (dumb-jump-go))))))
@@ -969,7 +969,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
                        (sleep-for 0 300)
                      (sleep-for 0.3)))
                  '(:results (:result))))
-        (with-mock-no-prompt
+        (with-mock-forbidding-prompt
           (stub dumb-jump-rg-installed? => t)
           (mock (dumb-jump-message "Took over %ss to find '%s'. Please install ag or rg, or add a .dumbjump file to '%s' with path exclusions" * * *))
           (mock (dumb-jump-result-follow * * *))
@@ -979,7 +979,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
   (let ((dumb-jump-aggressive t)
         (results '((:path "src/file.js" :line 62 :context "var isNow = true" :diff 7 :target "isNow")
                    (:path "src/file.js" :line 69 :context "isNow = false" :diff 0 :target "isNow"))))
-    (with-mock-no-prompt
+    (with-mock-forbidding-prompt
      (mock (dumb-jump-goto-file-line "src/file.js" 62 4))
      (dumb-jump-handle-results results "src/file.js" "/code/redux" "" "isNow" nil nil))))
 
@@ -1093,7 +1093,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
     (with-current-buffer (find-file-noselect js-file t)
       (goto-char (point-min))
       (forward-char 13)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         ;; (mock (executable-find *) => t)
         (mock (dumb-jump-rg-installed?) => nil)
         (mock (dumb-jump-ag-installed?) => nil)
@@ -1107,7 +1107,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
     (with-current-buffer (find-file-noselect js-file t)
       (goto-char (point-min))
       (forward-line 1)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-message "No symbol under point."))
         (with-no-warnings (dumb-jump-go))))))
@@ -1220,7 +1220,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 23)
       (forward-char 3)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 4 7))
         (should (string= (with-no-warnings (dumb-jump-go)) lib-file))))))
@@ -1262,7 +1262,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 8)
       (forward-char 2)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 3 6))
         (should (string= js-file (with-no-warnings (dumb-jump-go))))))))
@@ -1273,7 +1273,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 22)
       (forward-char 2)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 13 6))
         (should (string= js-file (with-no-warnings (dumb-jump-go))))))))
@@ -1285,7 +1285,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 27)
       (forward-char 2)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 26 6))
         (should (string= js-file (with-no-warnings (dumb-jump-go))))))))
@@ -1296,7 +1296,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 32)
       (forward-char 7)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 31 6))
         (should (string= js-file (with-no-warnings (dumb-jump-go))))))))
@@ -1307,7 +1307,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 39)
       (forward-char 2)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 37 6))
         (should (string= js-file (with-no-warnings (dumb-jump-go))))))))
@@ -1320,7 +1320,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 8)
       (forward-char 14)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 3 6))
         (should (string= cpp-file (with-no-warnings (dumb-jump-go))))))))
@@ -1331,7 +1331,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 8)
       (forward-char 9)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 1 6))
         (should (string= cpp-file (with-no-warnings (dumb-jump-go))))))))
@@ -1342,7 +1342,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 16)
       (forward-char 12)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 6 18))
         (should (string= cpp-file (with-no-warnings (dumb-jump-go))))))))
@@ -1355,7 +1355,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 3)
       (forward-char 2)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 9 6))
         (should (string= org-file (with-no-warnings (dumb-jump-go))))))
@@ -1369,7 +1369,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 14)
       (forward-char 10)
-       (with-mock-no-prompt
+       (with-mock-forbidding-prompt
          (stub dumb-jump-rg-installed? => t)
          (mock (dumb-jump-goto-file-line * 21 2))
          (should (string= org-file (with-no-warnings (dumb-jump-go))))))
@@ -1392,7 +1392,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (forward-line 3)
       (forward-char 2)
       (org-edit-src-code)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 9 6))
         (should (string= org-file (with-no-warnings (dumb-jump-go))))))
@@ -1411,7 +1411,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 38)  ; Line 39: "Test for uniqueblock lookup: uniqueblock"
       (forward-char 34)  ; Position cursor on "uniqueblock" at end of line
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 41 8))  ; Line 41 is #+name: uniqueblock (col 8)
         (should (string= org-file (with-no-warnings (dumb-jump-go))))))
@@ -1429,7 +1429,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 65)  ; Line 66: "Reference to MainTopic heading: MainTopic"
       (forward-char 35)  ; Position cursor on "MainTopic" at end of line
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 68 4))  ; Line 68 is *** MainTopic (col 4)
         (should (string= org-file (with-no-warnings (dumb-jump-go))))))
@@ -1447,7 +1447,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 57)  ; Line 58: "See also the section with ID call-section for more info."
       (forward-char 34)  ; Position cursor on "call-section"
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 55 12))  ; Line 55 is :CUSTOM_ID: call-section (col 12)
         (should (string= org-file (with-no-warnings (dumb-jump-go))))))
@@ -1465,7 +1465,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 61)  ; Line 62: "#+CALL: UPPERCASE()"
       (forward-char 8)   ; Position cursor on "UPPERCASE"
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 20 8))  ; Line 20 is #+NAME: UPPERCASE (col 8)
         (should (string= org-file (with-no-warnings (dumb-jump-go))))))
@@ -1483,7 +1483,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 45)  ; Line 46: "Test for nospace lookup: nospace"
       (forward-char 28)  ; Position cursor on "nospace" at end of line
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 48 7))  ; Line 48 is #+name:nospace (col 7)
         (should (string= org-file (with-no-warnings (dumb-jump-go))))))
@@ -1501,7 +1501,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 87)  ; Line 88: "Reference to nospace-id custom ID: nospace-id"
       (forward-char 36)  ; Position cursor on "nospace-id" at end of line
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 85 11))  ; Line 85 is :CUSTOM_ID:nospace-id (col 11)
         (should (string= org-file (with-no-warnings (dumb-jump-go))))))
@@ -1520,7 +1520,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 3)
       (forward-char 18)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 6 6))
         (should (string= header-file (with-no-warnings (dumb-jump-go))))))))
@@ -1535,7 +1535,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 10)
       (forward-char 2)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 4 6))
         (should (string= header-file (with-no-warnings (dumb-jump-go-prefer-external))))))))
@@ -1547,7 +1547,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 3)
       (forward-char 18)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 6 6))
         (should (string= header-file (with-no-warnings (dumb-jump-go-prefer-external))))))))
@@ -1558,7 +1558,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 1)
       (forward-char 2)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 6 6))
         (should (string= main-file (with-no-warnings (dumb-jump-go-prefer-external))))))))
@@ -1571,7 +1571,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 10)
       (forward-char 2)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 4 6))
         (should (string= header-file
@@ -1906,7 +1906,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 2)
       (forward-char 2)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 1 6))
         (should (string= clj-to-file (with-no-warnings (dumb-jump-go))))))))
@@ -1920,7 +1920,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 3)
       (forward-char 2)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 2 6))
         (should (string= clj-to-file (with-no-warnings (dumb-jump-go))))))))
@@ -1933,7 +1933,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 4)
       (forward-char 2)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         ;; (stub dumb-jump-ag-installed? => t)
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 4 9))
@@ -1947,7 +1947,7 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
       (goto-char (point-min))
       (forward-line 5)
       (forward-char 2)
-      (with-mock-no-prompt
+      (with-mock-forbidding-prompt
         (stub dumb-jump-rg-installed? => t)
         (mock (dumb-jump-goto-file-line * 5 7))
         (should (string= clj-to-file (with-no-warnings (dumb-jump-go))))))))
