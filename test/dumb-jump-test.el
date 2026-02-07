@@ -93,6 +93,34 @@
 ;; Tests
 ;; -----
 
+;; Test `with-mock-forbidding-prompt':
+
+;; - Ensure with-mock-forbidding-prompt actually detects prompts.
+(ert-deftest with-mock-forbidding-prompt-really-detects-prompt ()
+  "Test that with-mock-forbidding-prompt properly detects and fails on prompts."
+  (should-error
+   (with-mock-forbidding-prompt
+    ;; This should trigger the error
+    (dumb-jump-prompt-user-for-choice "/test/path" '((:path "a" :line 1))))))
+
+;; - Ensure that it does not misinterpret another exception as a prompt.
+(defun test-function-that-errors ()
+  "A test utility that issues an error."
+  (error "Issued by test-function-that-errors!"))
+
+(ert-deftest with-mock-forbidding-prompt-does-not-catch-other-exceptions ()
+  "Test that `my-function` signals a specific error message."
+  (let ((err (should-error
+              (with-mock-forbidding-prompt
+               (test-function-that-errors)))))
+    ;; The error description is a list, often in the format (ERROR-SYMBOL . DATA).
+    ;; The error message string is typically the second element (car of the DATA,
+    ;; which is the cdr of the error description).
+    (should (string-match "Issued by test-function-that-errors!" (cadr err)))))
+
+;; --------------------
+
+
 (ert-deftest data-dir-exists-test ()
   (should (f-dir? test-data-dir)))
 
@@ -1975,5 +2003,70 @@ VARIANT must be one of: ag, rg, grep, gnu-grep, git-grep, or git-grep-plus-ag."
   (with-mock
    (mock (shell-command-to-string "git grep --full-name -F -c symbol path") => "fileA:1\nfileB:2\n")
    (should (string= (dumb-jump-get-git-grep-files-matching-symbol-as-ag-arg "symbol" "path") "'(path/fileA|path/fileB)'"))))
+
+
+;; ---------------------------------------------------------------------------
+;; Tests for `dumb-jump-use-space-bracket-exp-for'
+
+(ert-deftest dumb-jump-use-space-bracket-exp-when-forced-on-grep ()
+  "Test dumb-jump-use-space-bracket-exp-for returned value."
+  ;; When `dumb-jump-force-using-space-bracket-exp' is t (like on Windows):
+  (let ((dumb-jump-force-using-space-bracket-exp t))
+    ;; It should return t for grep based tools to prevent problem when the
+    ;; system uses an old version of grep that did not support \s
+    (should (dumb-jump-use-space-bracket-exp-for 'grep))
+    (should (dumb-jump-use-space-bracket-exp-for 'gnu-grep))
+    (should (dumb-jump-use-space-bracket-exp-for 'git-grep))
+    (should (dumb-jump-use-space-bracket-exp-for 'git-grep-plus-ag))
+    ;; The other tools, ag, rg are not affected by this problem, so they can
+    ;; use \s in their regular expressions.
+    (should-not (dumb-jump-use-space-bracket-exp-for 'ag))
+    (should-not (dumb-jump-use-space-bracket-exp-for 'rg))
+    ))
+
+(ert-deftest dumb-jump-use-space-bracket-exp-when-not-forced ()
+  "Test that dumb-jump-use-space-bracket-exp-for returns nil when not forced."
+  (let ((dumb-jump-force-using-space-bracket-exp nil))
+    (should-not (dumb-jump-use-space-bracket-exp-for 'grep))
+    (should-not (dumb-jump-use-space-bracket-exp-for 'gnu-grep))
+    (should-not (dumb-jump-use-space-bracket-exp-for 'git-grep))
+    (should-not (dumb-jump-use-space-bracket-exp-for 'ag))
+    (should-not (dumb-jump-use-space-bracket-exp-for 'rg))))
+
+;; ---------------------------------------------------------------------------
+;; Tests space bracket expansion done by `dumb-jump-populate-regex'
+
+(ert-deftest dumb-jump-populate-regex-space-bracket-for-grep-tools-when-forced ()
+  "Test that \\s is replaced with [[:space:]] only for grep tools when forced."
+  (let ((dumb-jump-force-using-space-bracket-exp t))
+    ;; When forced, the bracket space should only be used in grep tools
+    (should (string= (dumb-jump-populate-regex "\\(defun\\s+JJJ\\j" "test-1" 'gnu-grep)
+                     "\\(defun[[:space:]]+test-1($|[^a-zA-Z0-9\\?\\*-])"))
+    (should (string= (dumb-jump-populate-regex "\\(defun\\s+JJJ\\j" "test-2" 'grep)
+                     "\\(defun[[:space:]]+test-2($|[^a-zA-Z0-9\\?\\*-])"))
+    (should (string= (dumb-jump-populate-regex "\\(defun\\s+JJJ\\j" "test-3" 'git-grep)
+                     "\\(defun[[:space:]]+test-3($|[^a-zA-Z0-9\\?\\*-])"))
+    ;; but not for the others.
+    ;; Note: ag uses a different regex
+    (should (string= (dumb-jump-populate-regex "\\(defun\\s+JJJ\\j" "test-4" 'ag)
+                     "\\(defun\\s+test-4(?![a-zA-Z0-9\\?\\*-])"))
+    (should (string= (dumb-jump-populate-regex "\\(defun\\s+JJJ\\j" "test-5" 'rg)
+                     "\\(defun\\s+test-5($|[^a-zA-Z0-9\\?\\*-])"))))
+
+(ert-deftest dumb-jump-populate-regex-space-bracket-for-no-tools-when-not-forced ()
+  "Test that \\s is replaced with [[:space:]] only for grep tools when forced."
+  (let ((dumb-jump-force-using-space-bracket-exp nil))
+    ;; When not forced, the bracket space should not be used by any tool
+    (should (string= (dumb-jump-populate-regex "\\(defun\\s+JJJ\\j" "test-1" 'gnu-grep)
+                     "\\(defun\\s+test-1($|[^a-zA-Z0-9\\?\\*-])"))
+    (should (string= (dumb-jump-populate-regex "\\(defun\\s+JJJ\\j" "test-2" 'grep)
+                     "\\(defun\\s+test-2($|[^a-zA-Z0-9\\?\\*-])"))
+    (should (string= (dumb-jump-populate-regex "\\(defun\\s+JJJ\\j" "test-3" 'git-grep)
+                     "\\(defun\\s+test-3($|[^a-zA-Z0-9\\?\\*-])"))
+    ;; Note: ag uses a different regex
+    (should (string= (dumb-jump-populate-regex "\\(defun\\s+JJJ\\j" "test-4" 'ag)
+                     "\\(defun\\s+test-4(?![a-zA-Z0-9\\?\\*-])"))
+    (should (string= (dumb-jump-populate-regex "\\(defun\\s+JJJ\\j" "test-5" 'rg)
+                     "\\(defun\\s+test-5($|[^a-zA-Z0-9\\?\\*-])"))))
 
 ;;;
