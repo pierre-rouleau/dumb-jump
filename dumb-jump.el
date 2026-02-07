@@ -462,7 +462,7 @@ If nil add also the language type of current src block."
     ;;-- common lisp
     (:language "commonlisp" :type "function"
            :supports ("ag" "grep" "rg" "git-grep")
-           :regex "\\\(def(un|macro|generic|method|setf)\\s+JJJ\\j"
+           :regex "\\(def(un|macro|generic|method|setf)\\s+JJJ\\j"
            ;; \\j usage see `dumb-jump-ag-word-boundary`
            :tests ("(defun test (blah)"
                    "(defun test\n"
@@ -502,7 +502,7 @@ If nil add also the language type of current src block."
 
     (:language "commonlisp" :type "function"
            :supports ("ag" "grep" "rg" "git-grep")
-           :regex "\\\(define-(modify-macro|compiler-macro|setf-expander)\\s+JJJ\\j"
+           :regex "\\(define-(modify-macro|compiler-macro|setf-expander)\\s+JJJ\\j"
            ;; \\j usage see `dumb-jump-ag-word-boundary`
            :tests ("(define-modify-macro test (blah)"
                    "(define-modify-macro test\n"
@@ -521,7 +521,7 @@ If nil add also the language type of current src block."
 
     (:language "commonlisp" :type "variable"
            :supports ("ag" "grep" "rg" "git-grep")
-           :regex "\\\(def(var|parameter|constant)\\b\\s*JJJ\\j"
+           :regex "\\(def(var|parameter|constant)\\b\\s*JJJ\\j"
            :tests ("(defvar test "
                    "(defvar test\n"
                    "(defparameter test "
@@ -540,7 +540,7 @@ If nil add also the language type of current src block."
 
     (:language "commonlisp" :type "variable"
            :supports ("ag" "grep" "rg" "git-grep")
-           :regex "\\\(define-symbol-macro\\b\\s*JJJ\\j"
+           :regex "\\(define-symbol-macro\\b\\s*JJJ\\j"
            :tests ("(define-symbol-macro test "
                    "(define-symbol-macro test\n")
            :not ("(define-symbol-macro tester"
@@ -549,7 +549,7 @@ If nil add also the language type of current src block."
 
     (:language "commonlisp" :type "type"
            :supports ("ag" "grep" "rg" "git-grep")
-           :regex "\\\(def(class|struct|type)\\b\\s*JJJ\\j"
+           :regex "\\(def(class|struct|type)\\b\\s*JJJ\\j"
            :tests ("(defclass test "
                    "(defclass test\n"
                    "(defstruct test "
@@ -568,7 +568,7 @@ If nil add also the language type of current src block."
 
     (:language "commonlisp" :type "type"
            :supports ("ag" "grep" "rg" "git-grep")
-           :regex "\\\(define-condition\\b\\s*JJJ\\j"
+           :regex "\\(define-condition\\b\\s*JJJ\\j"
            :tests ("(define-condition test "
                    "(define-condition test\n")
            :not ("(define-condition tester"
