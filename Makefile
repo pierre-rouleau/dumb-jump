@@ -19,7 +19,7 @@ EMACS ?= emacs
 all: test
 
 .cask:
-	cask
+	${CASK}
 
 test: unit
 

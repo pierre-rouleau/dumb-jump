@@ -39,7 +39,7 @@ endif
 
 test-this: .cask
 ifeq ($(strip $(TEST_NAMES)),)
-	@printf -- "ERROR: No test names provided after test-this. Aborting.\n" $(TEST_NAMES)
+	@printf -- "ERROR: No test names provided after test-this. Aborting.\n"
 	@exit 1
 else
 	${CASK} exec ert-runner -p "$(TEST_NAMES)"
