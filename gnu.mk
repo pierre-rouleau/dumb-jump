@@ -36,7 +36,13 @@ ifeq (test-this,$(firstword $(MAKECMDGOALS)))
   $(eval $(TEST_NAMES_LIST):;@:)
 endif
 
-test-this:
+
+test-this: .cask
+ifeq ($(strip $(TEST_NAMES)),)
+	@printf -- "ERROR: No test names provided after test-this. Aborting.\n" $(TEST_NAMES)
+	@exit 1
+else
 	${CASK} exec ert-runner -p "$(TEST_NAMES)"
+endif
 
 # ----------------------------------------------------------------------------

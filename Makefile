@@ -18,17 +18,19 @@ EMACS ?= emacs
 
 all: test
 
+.cask:
+	cask
+
 test: unit
 
-unit:
+unit: .cask
 	${CASK} exec ert-runner
 
 install:
 	${CASK} install
 
 
-test-concurrent:
-	cask
+test-concurrent: .cask
 	@go run test/ert_runner.go -p ".*-ag-.*" -p ".*-rg-.*" test/dumb-jump-test.el
 
 test-go:
@@ -68,16 +70,15 @@ help:
 Execute dumb-jump Ert tests.\n\
 The following targets are supported:\n\
 \n\
-- make                  : same as 'make test'\n\
-- make install          : install all dependencies specified in the Cask file\n\
-- make unit             : execute all Ert tests\n\
-- make test             : execute all Ert tests\n\
-- make test-this T1 T2  : execute specified Ert test(s) T1, T2...\n\
-- make test-concurrent  : execute all Ert tests, but concurrently.\n\
-- make help             : prints this help.\n\n\
+- make                       : same as 'make test'\n\
+- make install               : install all dependencies specified in Cask file\n\
+- make unit                  : execute all Ert tests\n\
+- make test                  : execute all Ert tests\n\
+- make test-this T1 [T2...]  : execute specified Ert test(s) T1, T2...\n\
+- make test-concurrent       : execute all Ert tests, but concurrently.\n\
+- make help                  : prints this help.\n\n\
 Notes:\n\
-- 'test-concurrent' shows the number of test skipped due to\n\
-. unavailability of a search tool, others do not.\n\
+- 'test-concurrent' shows # of skipped tests due to unavailability of a search tool, others do not.\n\
 - 'test-this' is only available when using GNU Make.\n\
 - Use 'test-this' to identify a set of tests by complete or partial names.\n\n"
 
